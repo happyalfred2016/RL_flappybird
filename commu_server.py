@@ -66,8 +66,10 @@ def rl_model(bytes, status: list):
     state = byte2img(bytes)
     done, score = status
     reward = 0
-    if score != record['score_last'] or done == 1:
+    if score != record['score_last']:
         reward = 1
+    if done == 1:
+        reward = -1
     logging.info('Obs Received')
 
     if done or record['first_pic']:

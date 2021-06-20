@@ -9,7 +9,7 @@ EPSILON = 0.9       # epsilon used for epsilon greedy approach
 GAMMA = 0.9         # discount factor
 TARGET_NETWORK_REPLACE_FREQ = 100       # How frequently target network updates
 MEMORY_CAPACITY = 10                  # The capacity of experience replay buffer
-IMG_SHAPE = [3, 256, 144]
+IMG_SHAPE = [3, 64, 36]
 N_ACTIONS = 2
 
 
@@ -31,9 +31,7 @@ class Net(nn.Module):
             nn.MaxPool2d(2, 2)
         )
         self.fc = nn.Sequential(
-            nn.Linear(18432, 2048),
-            nn.ReLU(inplace=True),
-            nn.Linear(2048, 256),
+            nn.Linear(1024, 256),
             nn.ReLU(inplace=True),
             nn.Linear(256, 2),
             nn.Softmax(dim=1)
