@@ -18,11 +18,17 @@ public class principal : MonoBehaviour {
 
     public AudioClip voa;
     public AudioClip fimGame;
+    private bool flap_trg;
     
     
     public bool GetFim()
     {
         return fim;
+    }
+
+    public void man_tri()
+    {
+        flap_trg = true;
     }
 
     // Use this for initialization
@@ -35,7 +41,7 @@ public class principal : MonoBehaviour {
 
         if(!fim)
         {
-            if (Input.GetButtonDown("Fire1"))
+            if (Input.GetButtonDown("Fire1") | flap_trg)
             {
                 if (!comeca)
                 {
@@ -45,6 +51,7 @@ public class principal : MonoBehaviour {
                     inicio.text = "";
                 }
                 movimentaJogador();
+                flap_trg = false;
             }
             Jogador.transform.rotation = Quaternion.Euler(Jogador.GetComponent<Rigidbody>().velocity.y * -10, 0, 0);
 

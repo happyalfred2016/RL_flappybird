@@ -15,6 +15,7 @@ sio = socketio.Server(binary=True)
 app = socketio.WSGIApp(sio)
 # RL model
 model = None
+imgs = []
 
 
 # TODO: fix the case that too many obs that algorithm can not handle.
@@ -71,12 +72,11 @@ def rl_model(bytes, status: list):
 
     # TODO: learning process
     # model.fit
-    action = 0
-    time.sleep(0.7)
+    action = 1
+    time.sleep(1.5)
 
-    # self.sio.emit('action', action)
     sio.emit('test', 123.)
-    sio.emit('action', 999.)
+    sio.emit('action', action)
 
     logging.info('Action Sent')
 
