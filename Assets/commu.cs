@@ -1,11 +1,13 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
+using System.Runtime.InteropServices;
 using UnityEngine;
 using BestHTTP.SocketIO;
-using System;
 
-using BestHTTP;
-using UnityEngine.Purchasing;
+
+
+
+// using BestHTTP;
+// using UnityEngine.Purchasing;
 
 public class commu : MonoBehaviour
 {
@@ -13,12 +15,20 @@ public class commu : MonoBehaviour
     private int count = 0;
     private int perframe = 60;
     private bool actioned = false;
-    private bool activted = false;
+
+    [DllImport("user32.dll", EntryPoint = "keybd_event")]
+    public static extern void Keybd_event(
+        byte bvk,//虚拟键值 ctrl键对应的是17
+        byte bScan,//0
+        int dwFlags,//0为按下，1按住，2释放
+        int dwExtraInfo//0
+    );
+    
     void Start ()
     {
         manager.Open();
-        manager.Socket.Emit("chat", "userName", "message");
-        manager.Socket.On("chat", Onchat);
+        // manager.Socket.Emit("chat", "userName", "message");
+        manager.Socket.On("test", Ontest);
         manager.Socket.On("action", Onaction);
        
     }
@@ -26,26 +36,6 @@ public class commu : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // 
-        // if (activted)
-        // {
-        //     if ((count % perframe == 0) & activted)
-        //     {
-        //         while(true)
-        //             if (actioned)
-        //             {
-        //                 var bytes = capture();
-        //                 manager.Socket.Emit("chat", "User", "Sending Picture");
-        //                 manager.Socket.Emit("obs", bytes);
-        //                 actioned = false;
-        //                 // count = 0;
-        //                 break;
-        //             }
-        //     }
-        // }
-        // else if (actioned)
-        //     activted = true;
-        
         // TODO: wait until action reach.(In order to action with fixed time interval)
         if (actioned)
         {
@@ -58,30 +48,32 @@ public class commu : MonoBehaviour
         }
         count += 1;
     }
-    void Onchat(Socket socket, Packet packet, params object[] args)
+
+    void Ontest(Socket socket, Packet packet, params object[] args)
     {   
-        Debug.Log("On Chat");
-        Debug.Log(args);
+        Debug.Log("On Test");
+        Debug.Log(args[0]);
     }
     
     void Onaction(Socket socket, Packet packet, params object[] args)
     {   
         Debug.Log("On Action");
-        Debug.Log(args);
+        Debug.Log(args[0]);
         
-        
-        // if ((int)args[0]>0)
-        // {
-        //     
-        // }
+        // In put.GetButtonDown("Fire1");
+        if ((double)args[0]>0)
+        {
+            Keybd_event(17, 0, 0, 0);
+            Keybd_event(17, 0, 2, 0);
+        }
         
         actioned = true;
     }
 
     byte[] capture()
     {
-        int resWidth = 3300; 
-        int resHeight = 2550;
+        int resWidth = 256; 
+        int resHeight = 144;
         return CaptureScreenshot2(new Rect(0, 0, resWidth, resHeight));
     }
 
@@ -112,7 +104,4 @@ public class commu : MonoBehaviour
         // // Application.OpenURL(filename);
         return bytes;
     }
-    
-    
-    
 }

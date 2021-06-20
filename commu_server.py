@@ -1,7 +1,7 @@
 import eventlet
 import socketio
 import io
-import PIL
+from PIL import Image
 import numpy as np
 import logging
 import time
@@ -21,6 +21,7 @@ model = None
 
 @sio.on('connect')
 def connect(sid, environ):
+    sio.emit('test', '123')
     sio.emit('action', 0)
     print('connect ', sid)
 
@@ -32,11 +33,20 @@ def chat(sid, user, meg):
 
 @sio.on('obs')
 def obs(sid, pic_byte, status):
-    # rlflappybird.add_obs(pic_byte, status={})
-    sio.start_background_task(rl_model, pic_byte, [])
+    '''
 
+    Args:
+        sid:
+        pic_byte:
+        status: list of status, finish?, reward?
+
+    Returns:
+
+    '''
+
+    # rlflappybird.add_obs(pic_byte, status={})
+    sio.start_background_task(rl_model, pic_byte, status)
     print('received bytes')
-    eventlet.sleep(2)
 
 
 @sio.on('disconnect')
@@ -47,7 +57,7 @@ def disconnect(sid):
 def byte2img(bytes):
     # no idea why have a extra byte at the beginning
     picture_stream = io.BytesIO(bytes[1:])
-    picture = PIL.Image.open(picture_stream)
+    picture = Image.open(picture_stream)
     imMat = np.asarray(picture)[:, :, :3]
 
     # TODO: resize the image
@@ -56,16 +66,18 @@ def byte2img(bytes):
 
 def rl_model(bytes, status: list):
     img = byte2img(bytes)
-    status = status
     logging.info('Obs Reveived')
+    logging.info('Status: %s' % status)
 
     # TODO: learning process
     # model.fit
     action = 0
-    time.sleep(3)
+    time.sleep(0.7)
 
     # self.sio.emit('action', action)
-    sio.emit('action', 0)
+    sio.emit('test', 123.)
+    sio.emit('action', 999.)
+
     logging.info('Action Sent')
 
 
