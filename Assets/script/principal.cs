@@ -18,6 +18,12 @@ public class principal : MonoBehaviour {
 
     public AudioClip voa;
     public AudioClip fimGame;
+    
+    
+    public bool GetFim()
+    {
+        return fim;
+    }
 
     // Use this for initialization
     void Start() {
@@ -97,5 +103,7 @@ public class principal : MonoBehaviour {
     {
         Application.LoadLevel("SampleScene");
     }
+
+    
 
 }

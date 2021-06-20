@@ -20,7 +20,7 @@ public class commu : MonoBehaviour
         manager.Socket.Emit("chat", "userName", "message");
         manager.Socket.On("chat", Onchat);
         manager.Socket.On("action", Onaction);
-
+       
     }
     
     // Update is called once per frame
@@ -50,8 +50,9 @@ public class commu : MonoBehaviour
         if (actioned)
         {
             var bytes = capture();
+            var status = getstatus();
             manager.Socket.Emit("chat", "User", "Sending Picture");
-            manager.Socket.Emit("obs", bytes);
+            manager.Socket.Emit("obs", bytes, status);
             actioned = false;
             count = 0;
         }
@@ -67,6 +68,13 @@ public class commu : MonoBehaviour
     {   
         Debug.Log("On Action");
         Debug.Log(args);
+        
+        
+        // if ((int)args[0]>0)
+        // {
+        //     
+        // }
+        
         actioned = true;
     }
 
@@ -75,6 +83,13 @@ public class commu : MonoBehaviour
         int resWidth = 3300; 
         int resHeight = 2550;
         return CaptureScreenshot2(new Rect(0, 0, resWidth, resHeight));
+    }
+
+    int[] getstatus()
+    {
+        var prin = GameObject.FindObjectOfType<principal>();
+        var pon = GameObject.FindObjectOfType<pontos>();
+        return new int[]{Convert.ToInt32(prin.GetFim()), pon.i};
     }
     
     byte[] CaptureScreenshot2(Rect rect)

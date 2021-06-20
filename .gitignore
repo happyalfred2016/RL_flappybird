@@ -29,6 +29,9 @@
 # rider
 .idea/
 
+#
+Assets/Best HTTP/
+
 # Gradle cache directory
 .gradle/
 
