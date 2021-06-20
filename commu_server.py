@@ -58,6 +58,7 @@ def rl_model(bytes, status: list):
     img = byte2img(bytes)
     status = status
     logging.info('Obs Reveived')
+    print(status)
 
     # TODO: learning process
     # model.fit

@@ -53,6 +53,7 @@ public class commu : MonoBehaviour
             var status = getstatus();
             manager.Socket.Emit("chat", "User", "Sending Picture");
             manager.Socket.Emit("obs", bytes, status);
+            Debug.Log(status);
             actioned = false;
             count = 0;
         }
@@ -80,8 +81,8 @@ public class commu : MonoBehaviour
 
     byte[] capture()
     {
-        int resWidth = 3300; 
-        int resHeight = 2550;
+        int resWidth = 256; 
+        int resHeight = 144;
         return CaptureScreenshot2(new Rect(0, 0, resWidth, resHeight));
     }
 
