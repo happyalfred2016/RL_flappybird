@@ -53,7 +53,6 @@ public class commu : MonoBehaviour
             var status = getstatus();
             manager.Socket.Emit("chat", "User", "Sending Picture");
             manager.Socket.Emit("obs", bytes, status);
-            Debug.Log(status);
             actioned = false;
             count = 0;
         }
@@ -62,13 +61,13 @@ public class commu : MonoBehaviour
     void Onchat(Socket socket, Packet packet, params object[] args)
     {   
         Debug.Log("On Chat");
-        Debug.Log(args);
+        Debug.Log(args[0]);
     }
     
     void Onaction(Socket socket, Packet packet, params object[] args)
     {   
         Debug.Log("On Action");
-        Debug.Log(args);
+        Debug.Log(args[0]);
         
         
         // if ((int)args[0]>0)
