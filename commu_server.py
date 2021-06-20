@@ -1,7 +1,7 @@
 import eventlet
 import socketio
 import io
-import PIL
+from PIL import Image
 import numpy as np
 import logging
 import time
@@ -47,7 +47,7 @@ def disconnect(sid):
 def byte2img(bytes):
     # no idea why have a extra byte at the beginning
     picture_stream = io.BytesIO(bytes[1:])
-    picture = PIL.Image.open(picture_stream)
+    picture = Image.open(picture_stream)
     imMat = np.asarray(picture)[:, :, :3]
 
     # TODO: resize the image
