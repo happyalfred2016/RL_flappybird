@@ -1,9 +1,6 @@
 import torch.nn as nn
 import numpy as np
 import torch
-from collections import deque
-import random
-
 
 # Define some Hyper Parameters
 BATCH_SIZE = 32     # batch size of sampling process from buffer
@@ -11,7 +8,7 @@ LR = 0.01           # learning rate
 EPSILON = 0.9       # epsilon used for epsilon greedy approach
 GAMMA = 0.9         # discount factor
 TARGET_NETWORK_REPLACE_FREQ = 100       # How frequently target network updates
-MEMORY_CAPACITY = 2000                  # The capacity of experience replay buffer
+MEMORY_CAPACITY = 10                  # The capacity of experience replay buffer
 IMG_SHAPE = [3, 256, 144]
 N_ACTIONS = 2
 
@@ -68,14 +65,14 @@ class DQN(object):
     def store_transition(self, s, a, r, s_):
         index = self.memory_counter % MEMORY_CAPACITY
         self.memory[0][index, :] = s
-        self.memory[1][index, :] = a
-        self.memory[2][index, :] = r
+        self.memory[1][index] = a
+        self.memory[2][index] = r
         self.memory[3][index, :] = s_
         self.memory_counter += 1
 
     def choose_action(self, x):
         # add 1 dimension to input state x
-        x = torch.unsqueeze(torch.FloatTensor(x), 0)
+        x = torch.unsqueeze(torch.FloatTensor(x.copy()), 0)
         # input only one sample
         if np.random.uniform() < EPSILON:   # greedy
             # use epsilon-greedy approach to take action
@@ -96,10 +93,10 @@ class DQN(object):
         self.learn_step_counter += 1
 
         index = np.random.choice(MEMORY_CAPACITY, BATCH_SIZE)
-        b_s = torch.tensor(self.memory[0][index, :])
-        b_a = torch.tensor(self.memory[1][index, :])
-        b_r = torch.tensor(self.memory[2][index, :])
-        b_s_ = torch.tensor(self.memory[3][index, :])
+        b_s = torch.tensor(self.memory[0][index, :]).to(torch.float32)
+        b_a = torch.tensor([self.memory[1][index]]).to(torch.int64)
+        b_r = torch.tensor(self.memory[2][index]).to(torch.float32)
+        b_s_ = torch.tensor(self.memory[3][index, :]).to(torch.float32)
         q_eval = self.eval_net(b_s).gather(1, b_a)  # (batch_size, 1)
         q_next = self.target_net(b_s_).detach()
         q_target = b_r + GAMMA * \
@@ -109,55 +106,31 @@ class DQN(object):
         self.optimizer.zero_grad()  # reset the gradient to zero
         loss.backward()
         self.optimizer.step()
-
-
-dqn = DQN()
-
-
-class Comm:
-    def get_obs(self):
-        # state, reward, done
-        return 1, 1, 1
-
-    def send_act(self):
-        return 0
-
-
-class FlappyBird:
-    def __init__(self, comm):
-        self.comm = comm
-
-    def reset(self):
-        while self.comm.get_obs()[2]:
-            continue
-        return self.comm.get_obs()[0]
-
-    def step(self, a):
-        self.comm.send_act(a)
-        return self.comm.get_obs()
-
-
-env = FlappyBird(Comm)
-
-# Start training
-print("\nCollecting experience...")
-for i_episode in range(400):
-    state = env.reset()
-    ep_r = 0
-    while True:
-        # take action based on the current state
-        action = dqn.choose_action(state)
-        # obtain the reward and next state and some other information
-        state_next, reward, done = env.step(action)
-
-        # store the transitions of states
-        dqn.store_transition(state, action, reward, state_next)
-        ep_r += reward
-        if dqn.memory_counter > MEMORY_CAPACITY:
-            dqn.learn()
-            if done:
-                print('Ep: ', i_episode, ' |', 'Ep_r: ', round(ep_r, 2))
-        if done:
-            break
-        # use next state to update the current state.
-        state = state_next
+#
+#
+# dqn = DQN()
+#
+# # env = FlappyBird(Comm)
+#
+# # Start training
+# print("\nCollecting experience...")
+# for i_episode in range(400):
+#     state = env.reset()
+#     ep_r = 0
+#     while True:
+#         # take action based on the current state
+#         action = dqn.choose_action(state)
+#         # obtain the reward and next state and some other information
+#         state_next, reward, done = env.step(action)
+#
+#         # store the transitions of states
+#         dqn.store_transition(state, action, reward, state_next)
+#         ep_r += reward
+#         if dqn.memory_counter > MEMORY_CAPACITY:
+#             dqn.learn()
+#             if done:
+#                 print('Ep: ', i_episode, ' |', 'Ep_r: ', round(ep_r, 2))
+#         if done:
+#             break
+#         # use next state to update the current state.
+#         state = state_next
