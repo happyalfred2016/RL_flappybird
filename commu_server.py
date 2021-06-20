@@ -31,13 +31,12 @@ def chat(sid, user, meg):
 
 
 @sio.on('obs')
-def obs(sid, pic_byte):
+def obs(sid, pic_byte, status):
     # rlflappybird.add_obs(pic_byte, status={})
-    sio.start_background_task(rl_model, pic_byte, {})
+    sio.start_background_task(rl_model, pic_byte, [])
 
     print('received bytes')
     eventlet.sleep(2)
-    sio.emit('action', 0)
 
 
 @sio.on('disconnect')
@@ -55,7 +54,7 @@ def byte2img(bytes):
     return imMat
 
 
-def rl_model(bytes, status):
+def rl_model(bytes, status: list):
     img = byte2img(bytes)
     status = status
     logging.info('Obs Reveived')
