@@ -72,8 +72,8 @@ public class commu : MonoBehaviour
 
     byte[] capture()
     {
-        int resWidth = 256;
-        int resHeight = 144;
+        int resWidth = 64;
+        int resHeight = 36;
         return CaptureScreenshot2(new Rect(0, 0, resWidth, resHeight));
     }
 
