@@ -4,11 +4,11 @@ import torch
 
 # Define some Hyper Parameters
 BATCH_SIZE = 32     # batch size of sampling process from buffer
-LR = 0.01           # learning rate
+LR = 0.0001           # learning rate
 EPSILON = 0.9       # epsilon used for epsilon greedy approach
 GAMMA = 0.9         # discount factor
 TARGET_NETWORK_REPLACE_FREQ = 100       # How frequently target network updates
-MEMORY_CAPACITY = 10                  # The capacity of experience replay buffer
+MEMORY_CAPACITY = 64                  # The capacity of experience replay buffer
 IMG_SHAPE = [3, 64, 36]
 N_ACTIONS = 2
 
@@ -84,6 +84,7 @@ class DQN(object):
         return action
 
     def learn(self):
+        self.optimizer.zero_grad()
         # update the target network every fixed steps
         if self.learn_step_counter % TARGET_NETWORK_REPLACE_FREQ == 0:
             # Assign the parameters of eval_net to target_net
@@ -95,13 +96,12 @@ class DQN(object):
         b_a = torch.tensor([self.memory[1][index]]).to(torch.int64)
         b_r = torch.tensor(self.memory[2][index]).to(torch.float32)
         b_s_ = torch.tensor(self.memory[3][index, :]).to(torch.float32)
-        q_eval = self.eval_net(b_s).gather(1, b_a)  # (batch_size, 1)
+        q_eval = self.eval_net(b_s).gather(1, b_a.repeat_interleave(32, dim=0))  # (batch_size, 1)
+
         q_next = self.target_net(b_s_).detach()
         q_target = b_r + GAMMA * \
             q_next.max(1)[0].view(BATCH_SIZE, 1)  # (batch_size, 1)
         loss = self.loss_func(q_eval, q_target)
-
-        self.optimizer.zero_grad()  # reset the gradient to zero
         loss.backward()
         self.optimizer.step()
 #

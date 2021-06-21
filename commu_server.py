@@ -68,53 +68,61 @@ record = dict(
     first_pic=True,
     ep_r=0,
     state_last=None,
+    action_last=None,
     score_last=0,
-    i_episode=0
+    i_episode=0,
+    done=False
 )
 
 
 def rl_model(bytes, status: list):
-    state = byte2img(bytes)
-    done, score = status
-    reward = 0
-    if score != record['score_last']:
-        reward = 1
-    if done == 1:
-        reward = -1
     logging.info('Obs Received')
+    state = byte2img(bytes)
 
-    if done or record['first_pic']:
-        sio.emit('action', 1)
-        record['ep_r'] = 0
-        record['score_last'] = 0
-        record['first_pic'] = False
+    import matplotlib.pyplot as plt
+    plt.imshow(state[0,:, :])
+    plt.show()
+
+    done, score = status
+    if record['done']:
+        if done !=1:  # if reset
+            record['state_last'] = None
+            record['action_last'] = None
+            record['first_pic'] = True
+            record['done']=False
+        sio.emit('action', 0)
+
+    if not record['done']:
+        if done == 1:
+            reward = -5
+            record['done'] = True
+            logging.info('Done')
+        else:
+            reward = 1
+
+        if record['first_pic']:
+            action_last = 1
+            record['ep_r'] = 0
+            record['first_pic'] = False
+        else:
+            dqn.store_transition(record['state_last'], record['action_last'], reward, state)
+            action_last = dqn.choose_action(state)
+
         record['state_last'] = state
-        record['score_last'] = score
-        return
+        record['action_last'] = action_last
+        sio.emit('action', int(action_last))
 
-    # take action based on the current state
-    action_last = dqn.choose_action(record['state_last'])
-    #action_last = 1
-    sio.emit('action', int(action_last))
-
-    # store the transitions of states
-    dqn.store_transition(record['state_last'], action_last, reward, state)
-
-    record['ep_r'] += 1
-    if dqn.memory_counter > MEMORY_CAPACITY:
-        dqn.learn()
-        print('learn')
-        if done:
-            record['i_episode'] += 1
-            print('Ep: ', record['i_episode'], ' |', 'Ep_r: ', record['ep_r'])
-    if done:
-        return
-    # use next state to update the current state.
-    record['state_last'] = state
-    record['score_last'] = score
+        record['ep_r'] += 1
+        if dqn.memory_counter > MEMORY_CAPACITY:
+            dqn.learn()
+            logging.info('learning')
+            # if done:
+            #     record['i_episode'] += 1
+            #
+                # logging.info('Ep: ', record['i_episode'], ' |', 'Ep_r: ', record['ep_r'])
 
 
-    time.sleep(0.1)
+
 
 
 if __name__ == '__main__':
