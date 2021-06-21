@@ -95,14 +95,14 @@ def rl_model(bytes, status: list):
 
     if not record['done']:
         if done == 1:
-            reward = -1
+            reward = -10
             record['done'] = True
             logging.info('Done')
         elif score > record['last_score']:
-            reward = 1
+            reward = 5
             record['last_score'] = score
         else:
-            reward = 0
+            reward = 1
 
         if record['first_pic']:
             action_last = 1

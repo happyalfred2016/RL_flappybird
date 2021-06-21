@@ -86,9 +86,10 @@ public class principal : MonoBehaviour {
 
     void movimentaJogador()
     {
-        GameObject novaPar= Instantiate(P);
-        novaPar.transform.position = Jogador.transform.position;
-        Destroy(novaPar, 2);
+        // 跳的时候冒出来的乱七八糟的东西
+        // GameObject novaPar= Instantiate(P);
+        // novaPar.transform.position = Jogador.transform.position;
+        // Destroy(novaPar, 2);
         GetComponent<AudioSource>().PlayOneShot(voa);
         Jogador.GetComponent<Rigidbody>().useGravity = true;
         Jogador.GetComponent<Rigidbody>().velocity = new Vector3(0.0f, 3.0f, 0.0f);

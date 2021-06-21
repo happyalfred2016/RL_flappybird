@@ -102,4 +102,9 @@ public class commu : MonoBehaviour
         // // Application.OpenURL(filename);
         return bytes;
     }
+
+    private void OnDestroy()
+    {
+        manager.Close();
+    }
 }
