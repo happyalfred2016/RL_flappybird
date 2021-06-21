@@ -6,42 +6,74 @@ import torch
 BATCH_SIZE = 32     # batch size of sampling process from buffer
 LR = 0.0001           # learning rate
 EPSILON = 0.9       # epsilon used for epsilon greedy approach
-GAMMA = 0.9         # discount factor
+GAMMA = 0.99         # discount factor
 TARGET_NETWORK_REPLACE_FREQ = 100       # How frequently target network updates
-MEMORY_CAPACITY = 64                  # The capacity of experience replay buffer
-IMG_SHAPE = [3, 64, 36]
+MEMORY_CAPACITY = 128                  # The capacity of experience replay buffer
+IMG_SHAPE = [3, 128, 72]
 N_ACTIONS = 2
 
 
+# class Net(nn.Module):
+#     def __init__(self):
+#         super(Net, self).__init__()
+#         self.conv = nn.Sequential(
+#             nn.Conv2d(3, 64, 3, 1, 1),
+#             nn.ReLU(inplace=True),
+#             nn.MaxPool2d(2, 2),
+#             nn.Conv2d(64, 64, 3, 1, 1),
+#             nn.ReLU(inplace=True),
+#             nn.MaxPool2d(2, 2),
+#             nn.Conv2d(64, 128, 3, 1, 1),
+#             nn.ReLU(inplace=True),
+#             nn.MaxPool2d(2, 2),
+#             nn.Conv2d(128, 128, 3, 1, 1),
+#             nn.ReLU(inplace=True),
+#             nn.MaxPool2d(2, 2)
+#         )
+#         self.fc = nn.Sequential(
+#             nn.Linear(1024, 256),
+#             nn.ReLU(inplace=True),
+#             nn.Linear(256, 2),
+#             # nn.Softmax(dim=1)
+#         )
+#
+#     def forward(self, x):
+#         x = self.conv(x)
+#         x = x.view(x.size(0), -1)
+#         x = self.fc(x)
+#         return x
+
+
 class Net(nn.Module):
-    def __init__(self):
-        super(Net, self).__init__()
-        self.conv = nn.Sequential(
-            nn.Conv2d(3, 64, 3, 1, 1),
+    def __init__(self,):
+        super(Net,self).__init__()
+        self.conv1 = nn.Sequential(
+            nn.Conv2d(in_channels=3, out_channels=32, kernel_size=8, stride=4, padding=2),
             nn.ReLU(inplace=True),
-            nn.MaxPool2d(2, 2),
-            nn.Conv2d(64, 64, 3, 1, 1),
-            nn.ReLU(inplace=True),
-            nn.MaxPool2d(2, 2),
-            nn.Conv2d(64, 128, 3, 1, 1),
-            nn.ReLU(inplace=True),
-            nn.MaxPool2d(2, 2),
-            nn.Conv2d(128, 128, 3, 1, 1),
-            nn.ReLU(inplace=True),
-            nn.MaxPool2d(2, 2)
+            nn.MaxPool2d(kernel_size=2)
         )
-        self.fc = nn.Sequential(
-            nn.Linear(1024, 256),
-            nn.ReLU(inplace=True),
-            nn.Linear(256, 2),
-            nn.Softmax(dim=1)
+        self.conv2 = nn.Sequential(
+            nn.Conv2d(in_channels=32, out_channels=64, kernel_size=4, stride=2, padding=1),
+            nn.ReLU(inplace=True)
         )
+        self.conv3 = nn.Sequential(
+            nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, stride=1, padding=1),
+            nn.ReLU(inplace=True)
+        )
+        self.fc1 = nn.Sequential(
+            nn.Linear(2048,256),
+            nn.ReLU()
+        )
+        self.out = nn.Linear(256,2)
 
     def forward(self, x):
-        x = self.conv(x)
+        x = self.conv1(x)
+        x = self.conv2(x)
+        x = self.conv3(x)
         x = x.view(x.size(0), -1)
-        x = self.fc(x)
-        return x
+        x = self.fc1(x)
+        return self.out(x)
+
 
 
 class DQN(object):

@@ -989,7 +989,7 @@ GameObject:
   - component: {fileID: 1274095746}
   m_Layer: 0
   m_Name: Plane (3)
-  m_TagString: canos
+  m_TagString: dome
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1001,13 +1001,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1274095744}
-  m_LocalRotation: {x: -0, y: -0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 2.8, z: 0}
+  m_LocalRotation: {x: 0.034216996, y: -0, z: -0.000000005587935, w: 0.9994145}
+  m_LocalPosition: {x: 0, y: 2.3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1984352875}
   m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+  m_LocalEulerAnglesHint: {x: 3.9220002, y: 0, z: 0}
 --- !u!65 &1274095746
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1067,7 +1067,7 @@ MeshRenderer:
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 6c61c270bd69246948bb392e36748c5f, type: 2}
+  - {fileID: 2100000, guid: 3dd3636f227ef429a8a89365f67a2a1b, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1110,7 +1110,7 @@ GameObject:
   - component: {fileID: 1321755940}
   m_Layer: 0
   m_Name: Plane (4)
-  m_TagString: Untagged
+  m_TagString: dome
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1122,13 +1122,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1321755938}
-  m_LocalRotation: {x: -0, y: -0, z: 0, w: 1}
-  m_LocalPosition: {x: -9.965438, y: 2.8, z: -0}
+  m_LocalRotation: {x: 0.034216996, y: -0, z: -0.000000005587935, w: 0.9994145}
+  m_LocalPosition: {x: -9.965438, y: 2.3, z: -0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1984352875}
   m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+  m_LocalEulerAnglesHint: {x: 3.9220002, y: 0, z: 0}
 --- !u!64 &1321755940
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1161,7 +1161,7 @@ MeshRenderer:
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 6c61c270bd69246948bb392e36748c5f, type: 2}
+  - {fileID: 2100000, guid: 3dd3636f227ef429a8a89365f67a2a1b, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1204,7 +1204,7 @@ GameObject:
   - component: {fileID: 1588770391}
   m_Layer: 0
   m_Name: Plane (5)
-  m_TagString: Untagged
+  m_TagString: dome
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1216,13 +1216,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1588770389}
-  m_LocalRotation: {x: -0, y: -0, z: 0, w: 1}
-  m_LocalPosition: {x: 9.9244175, y: 2.8, z: 0}
+  m_LocalRotation: {x: 0.034216996, y: -0, z: -0.000000005587935, w: 0.9994145}
+  m_LocalPosition: {x: 9.9244175, y: 2.3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1984352875}
   m_RootOrder: 5
-  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+  m_LocalEulerAnglesHint: {x: 3.9220002, y: 0, z: 0}
 --- !u!64 &1588770391
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1255,7 +1255,7 @@ MeshRenderer:
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 6c61c270bd69246948bb392e36748c5f, type: 2}
+  - {fileID: 2100000, guid: 3dd3636f227ef429a8a89365f67a2a1b, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

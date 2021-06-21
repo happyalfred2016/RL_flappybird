@@ -27,6 +27,11 @@ public class pontos : MonoBehaviour {
         {
             personagen.SendMessage("FimGame");
         }
+        
+        if(other.gameObject.tag == "dome")
+        {
+            personagen.SendMessage("FimGame2");
+        }
     }
     void som()
     {

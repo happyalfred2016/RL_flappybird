@@ -104,7 +104,18 @@ public class principal : MonoBehaviour {
         CancelInvoke("CriaObj"); 
         Jogador.GetComponent<Rigidbody>().velocity = new Vector3(0.0f, 5.0f, -5.0f);
         Jogador.transform.rotation = Quaternion.Euler(Jogador.GetComponent<Rigidbody>().velocity.y * 15, 0, 0);
-        Invoke("carregaCena", 2);
+        Invoke("carregaCena", 0.5f);
+    }
+    
+    void FimGame2()
+    {
+        fim = true;
+        GetComponent<AudioSource>().PlayOneShot(fimGame);
+        CancelInvoke("InsCerca");
+        CancelInvoke("CriaObj"); 
+        Jogador.GetComponent<Rigidbody>().velocity = new Vector3(0.0f, -5.0f, -5.0f);
+        Jogador.transform.rotation = Quaternion.Euler(Jogador.GetComponent<Rigidbody>().velocity.y * 15, 0, 0);
+        Invoke("carregaCena", 0.5f);
     }
 
     void carregaCena()

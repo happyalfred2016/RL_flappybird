@@ -9,7 +9,7 @@ public class commu : MonoBehaviour
 {
     private SocketManager manager = new SocketManager(new Uri("http://127.0.0.1:5000/socket.io/"));
     private int count = 0;
-    private int perframe = 10;
+    private int perframe = 20;
     private bool actioned = false;
     private int actionDo = 0;
     private bool isready = false;
@@ -72,8 +72,8 @@ public class commu : MonoBehaviour
 
     byte[] capture()
     {
-        int resWidth = 64;
-        int resHeight = 36;
+        int resWidth = 128;
+        int resHeight = 72;
         return CaptureScreenshot2(new Rect(0, 0, resWidth, resHeight));
     }
 

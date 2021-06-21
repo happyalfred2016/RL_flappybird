@@ -71,7 +71,9 @@ record = dict(
     action_last=None,
     score_last=0,
     i_episode=0,
-    done=False
+    last_score=0,
+    done=False,
+    learning=False
 )
 
 
@@ -79,34 +81,47 @@ def rl_model(bytes, status: list):
     logging.info('Obs Received')
     state = byte2img(bytes)
 
-    import matplotlib.pyplot as plt
-    plt.imshow(state[0,:, :])
-    plt.show()
+    
 
     done, score = status
     if record['done']:
-        if done !=1:  # if reset
+        if done != 1:  # if reset
             record['state_last'] = None
             record['action_last'] = None
             record['first_pic'] = True
-            record['done']=False
+            record['done'] = False
+            record['last_score'] = 0
         sio.emit('action', 0)
 
     if not record['done']:
         if done == 1:
-            reward = -5
+            reward = -1
             record['done'] = True
             logging.info('Done')
-        else:
+        elif score > record['last_score']:
             reward = 1
+            record['last_score'] = score
+        else:
+            reward = 0
 
         if record['first_pic']:
             action_last = 1
             record['ep_r'] = 0
             record['first_pic'] = False
         else:
+            # import matplotlib.pyplot as plt
+            # # plt.figure()
+            # plt.imshow(record['state_last'].transpose(2,1,0))
+            # plt.show()
+            # plt.imshow(state.transpose(2,1,0))
+            # plt.show()
+            
+            
             dqn.store_transition(record['state_last'], record['action_last'], reward, state)
-            action_last = dqn.choose_action(state)
+            if record['learning']:
+                action_last = dqn.choose_action(state)
+            else:
+                action_last = np.random.randint(0, 2)
 
         record['state_last'] = state
         record['action_last'] = action_last
@@ -114,15 +129,15 @@ def rl_model(bytes, status: list):
 
         record['ep_r'] += 1
         if dqn.memory_counter > MEMORY_CAPACITY:
+            record['learning'] = True
             dqn.learn()
             logging.info('learning')
+        else:
+            logging.info('Memory: %d' % dqn.memory_counter)
             # if done:
             #     record['i_episode'] += 1
             #
-                # logging.info('Ep: ', record['i_episode'], ' |', 'Ep_r: ', record['ep_r'])
-
-
-
+            # logging.info('Ep: ', record['i_episode'], ' |', 'Ep_r: ', record['ep_r'])
 
 
 if __name__ == '__main__':

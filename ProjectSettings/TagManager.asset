@@ -6,6 +6,7 @@ TagManager:
   tags:
   - pontos
   - canos
+  - dome
   layers:
   - Default
   - TransparentFX
