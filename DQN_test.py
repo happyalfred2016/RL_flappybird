@@ -6,11 +6,11 @@ import torchvision.models as models
 
 # Define some Hyper Parameters
 BATCH_SIZE = 24  # batch size of sampling process from buffer
-LR = 0.000001  # learning rate
+LR = 0.00001  # learning rate
 EPSILON = 0.9  # epsilon used for epsilon greedy approach
 GAMMA = 0.9  # discount factor
 TARGET_NETWORK_REPLACE_FREQ = 20  # How frequently target network updates
-MEMORY_CAPACITY = 4096  # The capacity of experience replay buffer
+MEMORY_CAPACITY = 20000  # The capacity of experience replay buffer
 IMG_SHAPE = [3, 128, 72]
 N_ACTIONS = 2
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -53,13 +53,13 @@ class Net(nn.Module):
 
 
 def get_net():
-    # resnet18 = models.resnet18()
-    # num_ftrs = resnet18.fc.in_features
-    # # resnet18.load_state_dict(torch.load('./resnet18-5c106cde.pth', map_location=device), strict=False)
-    # resnet18.fc = nn.Linear(num_ftrs, 2)
-    # resnet18.load_state_dict(torch.load('./model.pth', map_location=device), strict=False)
-    # return resnet18
-    return Net()
+    resnet18 = models.resnet18()
+    num_ftrs = resnet18.fc.in_features
+    # resnet18.load_state_dict(torch.load('./resnet18-5c106cde.pth', map_location=device), strict=False)
+    resnet18.fc = nn.Linear(num_ftrs, 2)
+    resnet18.load_state_dict(torch.load('./model.pth', map_location=device), strict=False)
+    return resnet18
+    # return Net()
 
 
 class DQN(object):

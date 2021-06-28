@@ -42,8 +42,7 @@ public class commu : MonoBehaviour
         // TODO: wait until action reach.(In order to action with fixed time interval)
         if (count % perframe == 0)
         {
-
-            Time.timeScale = 0;
+            // Time.timeScale = 0;
             if (actioned)
             {
                 if (pon.i != old_score)
@@ -53,25 +52,20 @@ public class commu : MonoBehaviour
                 }
                 else
                     score_count += 1;
-                if (score_count > 50)
+                if (score_count > 300)
                 {
                     personagen.SendMessage("FimGame2");
                     score_count = 0;
                     Debug.Log("Reset!");
                 }
 
-                // In put.GetButtonDown("Fire1");
-                // Time.timeScale = 0;
-                if (actionDo > 0)
-                    prin.man_tri();
                 var bytes = capture();
                 var status = getstatus();
                 manager.Socket.Emit("chat", "User", "Sending Picture");
                 manager.Socket.Emit("obs", bytes, status);
                 actioned = false;
-                actionDo = 0;
                 count = 0;
-                Time.timeScale = game_speed;
+                Time.timeScale = 0;
             }
         }
 
@@ -89,6 +83,9 @@ public class commu : MonoBehaviour
         Debug.Log("On Action");
         Debug.Log(args[0]);
         actionDo = Convert.ToInt32(args[0]);
+        Time.timeScale = game_speed;
+        if (actionDo > 0)
+            prin.man_tri();
         actioned = true;
     }
 
