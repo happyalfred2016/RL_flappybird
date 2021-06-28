@@ -15,6 +15,8 @@ public class pontos : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
+    
+    
 	void OnTriggerEnter(Collider other) {
 		if(other.gameObject.tag == "pontos")
         {

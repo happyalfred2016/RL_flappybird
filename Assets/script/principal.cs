@@ -62,7 +62,7 @@ public class principal : MonoBehaviour {
 
     void InsCerca()
     {
-        Instantiate(cerca);
+        // Instantiate(cerca);
     }
 
     void CriaObj()
@@ -77,10 +77,19 @@ public class principal : MonoBehaviour {
         GameObject itensC = new GameObject();
         switch (i)
         {
+            // case 1: break;
+            // case 2: break;
+            // case 3: break;
+            // case 4: break;
+            
             case 1: itensC = Instantiate(cano); itensC.transform.position = new Vector3(0.45f, y, itensC.transform.position.z); break;
-            case 2: itensC = Instantiate(pedra); itensC.transform.position = new Vector3(x, 0, itensC.transform.position.z); break;
-            case 3: itensC = Instantiate(mato); itensC.transform.position = new Vector3(x, 0, itensC.transform.position.z);  break;
-            case 4: itensC = Instantiate(nuvem); itensC.transform.position = new Vector3(x, Yn, itensC.transform.position.z); break;
+            case 2: itensC = Instantiate(cano); itensC.transform.position = new Vector3(0.45f, y, itensC.transform.position.z); break;
+            case 3: itensC = Instantiate(cano); itensC.transform.position = new Vector3(0.45f, y, itensC.transform.position.z); break;
+            case 4: itensC = Instantiate(cano); itensC.transform.position = new Vector3(0.45f, y, itensC.transform.position.z); break;
+            
+            // case 2: itensC = Instantiate(pedra); itensC.transform.position = new Vector3(x, 0, itensC.transform.position.z); break;
+            // case 3: itensC = Instantiate(mato); itensC.transform.position = new Vector3(x, 0, itensC.transform.position.z);  break;
+            // case 4: itensC = Instantiate(nuvem); itensC.transform.position = new Vector3(x, Yn, itensC.transform.position.z); break;
         }
     }
 

@@ -7,6 +7,7 @@ import numpy as np
 import logging
 import time
 from DQN_test import Net, DQN, MEMORY_CAPACITY
+import matplotlib.pyplot as plt
 
 logging.basicConfig(level='INFO')
 
@@ -18,6 +19,14 @@ app = socketio.WSGIApp(sio)
 
 
 # TODO: fix the case that too many obs that algorithm can not handle.
+
+@sio.on('save')
+def save(sid, path):
+    if path:
+        torch.save(dqn.eval_net.state_dict(), path)
+    else:
+        torch.save(dqn.eval_net.state_dict(), './model.pth')
+    print('Saved model')
 
 @sio.on('connect')
 def connect(sid, environ):
@@ -57,7 +66,7 @@ def byte2img(bytes):
     # no idea why have a extra byte at the beginning
     picture_stream = io.BytesIO(bytes[1:])
     picture = Image.open(picture_stream)
-    imMat = np.asarray(picture)[:, :, :3].T
+    imMat = np.asarray(picture)[:, :, :3].T/255.
 
     # TODO: resize the image
     return imMat
@@ -73,7 +82,6 @@ record = dict(
     i_episode=0,
     last_score=0,
     done=False,
-    learning=False
 )
 
 
@@ -95,33 +103,31 @@ def rl_model(bytes, status: list):
 
     if not record['done']:
         if done == 1:
-            reward = -10
+            reward = -1
             record['done'] = True
             logging.info('Done')
         elif score > record['last_score']:
-            reward = 5
+            reward = 1
             record['last_score'] = score
         else:
-            reward = 1
+            reward = 0
 
         if record['first_pic']:
             action_last = 1
             record['ep_r'] = 0
             record['first_pic'] = False
-        else:
-            # import matplotlib.pyplot as plt
-            # # plt.figure()
-            # plt.imshow(record['state_last'].transpose(2,1,0))
-            # plt.show()
-            # plt.imshow(state.transpose(2,1,0))
-            # plt.show()
-            
-            
+        else:            
             dqn.store_transition(record['state_last'], record['action_last'], reward, state)
-            if record['learning']:
-                action_last = dqn.choose_action(state)
-            else:
-                action_last = np.random.randint(0, 2)
+            action_last = dqn.choose_action(state)
+
+            # plt.figure()
+            # plt.imshow(record['state_last'].transpose(2, 1, 0))
+            # plt.title('state t, action: %d, reward: %d' % (record['action_last'], reward))
+            # plt.show()
+            # plt.imshow(state.transpose(2, 1, 0))
+            # plt.title('state t+1, action: %d' % action_last)
+            # plt.show()
+            logging.warning('Action choose: %d' % action_last)
 
         record['state_last'] = state
         record['action_last'] = action_last
@@ -129,9 +135,9 @@ def rl_model(bytes, status: list):
 
         record['ep_r'] += 1
         if dqn.memory_counter > MEMORY_CAPACITY:
-            record['learning'] = True
-            dqn.learn()
-            logging.info('learning')
+            if done:
+                dqn.learn()
+                logging.info('learning')
         else:
             logging.info('Memory: %d' % dqn.memory_counter)
             # if done:

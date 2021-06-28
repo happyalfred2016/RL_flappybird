@@ -9,10 +9,15 @@ public class commu : MonoBehaviour
 {
     private SocketManager manager = new SocketManager(new Uri("http://127.0.0.1:5000/socket.io/"));
     private int count = 0;
-    private int perframe = 20;
+    private int perframe = 2;
+    private int game_speed = 5;
+    // private int perframe = 20;
+    // private int game_speed = 1;
     private bool actioned = false;
     private int actionDo = 0;
     private bool isready = false;
+    public GameObject personagen;
+    private int old_score, score_count;
 
     principal prin;
     pontos pon;
@@ -27,6 +32,8 @@ public class commu : MonoBehaviour
         prin = GameObject.FindObjectOfType<principal>();
         pon = GameObject.FindObjectOfType<pontos>();
         Application.targetFrameRate = 60;
+        old_score = 0;
+        score_count = 0;
     }
 
     // Update is called once per frame
@@ -35,9 +42,24 @@ public class commu : MonoBehaviour
         // TODO: wait until action reach.(In order to action with fixed time interval)
         if (count % perframe == 0)
         {
+
             Time.timeScale = 0;
             if (actioned)
             {
+                if (pon.i != old_score)
+                {
+                    old_score = pon.i;
+                    score_count = 0;
+                }
+                else
+                    score_count += 1;
+                if (score_count > 50)
+                {
+                    personagen.SendMessage("FimGame2");
+                    score_count = 0;
+                    Debug.Log("Reset!");
+                }
+
                 // In put.GetButtonDown("Fire1");
                 // Time.timeScale = 0;
                 if (actionDo > 0)
@@ -49,7 +71,7 @@ public class commu : MonoBehaviour
                 actioned = false;
                 actionDo = 0;
                 count = 0;
-                Time.timeScale = 1;
+                Time.timeScale = game_speed;
             }
         }
 

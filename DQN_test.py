@@ -5,12 +5,12 @@ import logging
 import torchvision.models as models
 
 # Define some Hyper Parameters
-BATCH_SIZE = 16  # batch size of sampling process from buffer
-LR = 0.0001  # learning rate
+BATCH_SIZE = 24  # batch size of sampling process from buffer
+LR = 0.000001  # learning rate
 EPSILON = 0.9  # epsilon used for epsilon greedy approach
-GAMMA = 0.99  # discount factor
-TARGET_NETWORK_REPLACE_FREQ = 100  # How frequently target network updates
-MEMORY_CAPACITY = 256  # The capacity of experience replay buffer
+GAMMA = 0.9  # discount factor
+TARGET_NETWORK_REPLACE_FREQ = 20  # How frequently target network updates
+MEMORY_CAPACITY = 4096  # The capacity of experience replay buffer
 IMG_SHAPE = [3, 128, 72]
 N_ACTIONS = 2
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -53,11 +53,13 @@ class Net(nn.Module):
 
 
 def get_net():
-    resnet18 = models.resnet18()
-    num_ftrs = resnet18.fc.in_features
-    resnet18.load_state_dict(torch.load('./resnet18-5c106cde.pth', map_location=device), strict=False)
-    resnet18.fc = nn.Linear(num_ftrs, 2)
-    return resnet18
+    # resnet18 = models.resnet18()
+    # num_ftrs = resnet18.fc.in_features
+    # # resnet18.load_state_dict(torch.load('./resnet18-5c106cde.pth', map_location=device), strict=False)
+    # resnet18.fc = nn.Linear(num_ftrs, 2)
+    # resnet18.load_state_dict(torch.load('./model.pth', map_location=device), strict=False)
+    # return resnet18
+    return Net()
 
 
 class DQN(object):
@@ -72,7 +74,8 @@ class DQN(object):
                             np.zeros([MEMORY_CAPACITY]),
                             np.zeros([MEMORY_CAPACITY] + IMG_SHAPE)])
         # ------- Define the optimizer------#
-        self.optimizer = torch.optim.Adam(self.eval_net.parameters(), lr=LR)
+        # self.optimizer = torch.optim.Adam(self.eval_net.parameters(), lr=LR)
+        self.optimizer = torch.optim.RMSprop(self.eval_net.parameters())
         # ------Define the loss function-----#
         self.loss_func = nn.MSELoss()
 
@@ -86,7 +89,9 @@ class DQN(object):
 
     def choose_action(self, x):
         x = torch.from_numpy(x.copy()).to(dtype=torch.float32, device=device)
+
         with torch.no_grad():
+            self.eval_net.eval()
             # add 1 dimension to input state x
             x = torch.unsqueeze(x, 0)
             # input only one sample
@@ -96,12 +101,15 @@ class DQN(object):
                 # torch.max() returns a tensor composed of max value along the axis=dim and corresponding index
                 # what we need is the index in this function, representing the
                 # action of cart.
-                action = torch.max(actions_value, 1)[1].data.cpu().numpy()
+                action = actions_value.argmax(dim=1).data.cpu().numpy()
+                #  action = torch.max(actions_value, 1)[1].data.cpu().numpy()
             else:  # random
                 action = np.random.randint(0, N_ACTIONS)
         return action
 
     def learn(self):
+        self.eval_net.train(True)
+        self.target_net.eval()
         self.optimizer.zero_grad()
         # update the target network every fixed steps
         if self.learn_step_counter % TARGET_NETWORK_REPLACE_FREQ == 0:
@@ -115,15 +123,29 @@ class DQN(object):
         b_r = torch.tensor(self.memory[2][index]).to(dtype=torch.float32,device=device)
         b_s_ = torch.tensor(self.memory[3][index, :]).to(dtype=torch.float32,device=device)
 
-        q_eval = self.eval_net(b_s).gather(1, b_a.repeat_interleave(32, dim=0))  # (batch_size, 1)
-
+        # TODO: not terminal?
+        ntm = (b_r >= 0).to(torch.float32).view(BATCH_SIZE, 1)
+        q_eval = self.eval_net(b_s).gather(1, b_a.t())  # (batch_size, 1)
         q_next = self.target_net(b_s_).detach()
-        q_target = b_r + GAMMA * \
-                   q_next.max(1)[0].view(BATCH_SIZE, 1)  # (batch_size, 1)
+        q_target = b_r.view(BATCH_SIZE, 1) + ntm * GAMMA * q_next.max(1)[0].view(BATCH_SIZE, 1)  # (batch_size, 1)
         loss = self.loss_func(q_eval, q_target)
         loss.backward()
+
+        for param in self.eval_net.parameters():
+            param.grad.data.clamp_(-1, 1)
+
         self.optimizer.step()
         logging.info(loss)
+
+        # import matplotlib.pyplot as plt
+        # # plt.figure()
+        # img = b_s[4].detach().cpu().numpy()
+        # plt.imshow(img.transpose(2,1,0))
+        # plt.show()
+        # 
+        # img = b_s_[4].detach().cpu().numpy()
+        # plt.imshow(img.transpose(2, 1, 0))
+        # plt.show()
 #
 #
 # dqn = DQN()
