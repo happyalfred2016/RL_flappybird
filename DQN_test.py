@@ -10,7 +10,7 @@ LR = 0.00001  # learning rate
 EPSILON = 0.9  # epsilon used for epsilon greedy approach
 GAMMA = 0.9  # discount factor
 TARGET_NETWORK_REPLACE_FREQ = 20  # How frequently target network updates
-MEMORY_CAPACITY = 20000  # The capacity of experience replay buffer
+MEMORY_CAPACITY = 4096  # The capacity of experience replay buffer
 IMG_SHAPE = [3, 128, 72]
 N_ACTIONS = 2
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -136,41 +136,14 @@ class DQN(object):
 
         self.optimizer.step()
         logging.info(loss)
+        return loss
 
         # import matplotlib.pyplot as plt
         # # plt.figure()
         # img = b_s[4].detach().cpu().numpy()
         # plt.imshow(img.transpose(2,1,0))
         # plt.show()
-        # 
+        #
         # img = b_s_[4].detach().cpu().numpy()
         # plt.imshow(img.transpose(2, 1, 0))
         # plt.show()
-#
-#
-# dqn = DQN()
-#
-# # env = FlappyBird(Comm)
-#
-# # Start training
-# print("\nCollecting experience...")
-# for i_episode in range(400):
-#     state = env.reset()
-#     ep_r = 0
-#     while True:
-#         # take action based on the current state
-#         action = dqn.choose_action(state)
-#         # obtain the reward and next state and some other information
-#         state_next, reward, done = env.step(action)
-#
-#         # store the transitions of states
-#         dqn.store_transition(state, action, reward, state_next)
-#         ep_r += reward
-#         if dqn.memory_counter > MEMORY_CAPACITY:
-#             dqn.learn()
-#             if done:
-#                 print('Ep: ', i_episode, ' |', 'Ep_r: ', round(ep_r, 2))
-#         if done:
-#             break
-#         # use next state to update the current state.
-#         state = state_next

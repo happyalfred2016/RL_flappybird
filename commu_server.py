@@ -7,6 +7,7 @@ import numpy as np
 import logging
 import time
 from DQN_test import Net, DQN, MEMORY_CAPACITY
+import pickle as pkl
 import matplotlib.pyplot as plt
 
 logging.basicConfig(level='INFO')
@@ -16,7 +17,8 @@ sio = socketio.Server(binary=True)
 #     '/': {'content_type': 'text/html', 'filename': 'index.html'}
 # })
 app = socketio.WSGIApp(sio)
-
+losses = []
+count = 0
 
 # TODO: fix the case that too many obs that algorithm can not handle.
 
@@ -136,8 +138,13 @@ def rl_model(bytes, status: list):
         record['ep_r'] += 1
         if dqn.memory_counter > MEMORY_CAPACITY:
             if done:
-                dqn.learn()
+                loss = dqn.learn()
                 logging.info('learning')
+                if count % 10 == 0:
+                    losses.append(loss)
+                    with open('./loss.pkl', 'wb') as f:
+                        pkl.dump(losses, f)
+
         else:
             logging.info('Memory: %d' % dqn.memory_counter)
             # if done:

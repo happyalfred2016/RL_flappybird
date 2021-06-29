@@ -40,7 +40,7 @@ public class commu : MonoBehaviour
     void Update()
     {
         // TODO: wait until action reach.(In order to action with fixed time interval)
-        if (count % perframe == 0)
+        if ((count % perframe == 0) & (count > 0) )
         {
             // Time.timeScale = 0;
             if (actioned)
@@ -86,6 +86,7 @@ public class commu : MonoBehaviour
         Time.timeScale = game_speed;
         if (actionDo > 0)
             prin.man_tri();
+        count = 0;
         actioned = true;
     }
 
